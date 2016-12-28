@@ -1,3 +1,12 @@
+/**
+ * =============================================================================
+ *                     WARNING! COMPLETELY UNFINISHED
+ * =============================================================================
+ *
+ * This is currently just a placeholder before the `app-time start` command is
+ * ipmlemented, which will run based on this config.
+ */
+
 const path = require('path');
 const webpack = require('webpack');
 const rupture = require('rupture');

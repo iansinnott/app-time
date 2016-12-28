@@ -6,13 +6,10 @@ const args = process.argv.slice(3);
 
 switch (script) {
 case 'build':
-  var result = spawnSync(
+  const result = spawnSync(
     'node',
     [require.resolve(`../scripts/${script}`)].concat(args),
-    {
-      stdio: 'inherit',
-      shell: true, // Work on Unix or Windows (hopefully)
-    }
+    { stdio: 'inherit', shell: true }  // shell: true -> Work on Unix or Windows (hopefully)
   );
   process.exitCode = result.status;
   break;
