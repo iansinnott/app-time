@@ -10,16 +10,11 @@ const { resolveApp, ownNodeModules } = require('../utils/paths.js');
 debug('resolving loaders to:', ownNodeModules);
 debug('resolving everything else to:', resolveApp('./'));
 
-const routes = resolveApp('./client/routes.js');
-const template = resolveApp('./template.js');
+const staticRoutes = resolveApp('./client/routes.js');
+const staticTemplate = resolveApp('./template.js');
 
-debug('declared routes file', routes)
-debug('declared template file', template)
-
-const reactStaticPlugin = new ReactStaticPlugin({
-  routes: routes,
-  template: template,
-});
+debug('declared routes file', staticRoutes);
+debug('declared template file', staticTemplate);
 
 module.exports = {
   devtool: 'source-map',
@@ -61,8 +56,10 @@ module.exports = {
       sourceMap: true,
       compressor: { warnings: false },
     }),
-
-    // reactStaticPlugin,
+    new ReactStaticPlugin({
+      routes: staticRoutes,
+      template: staticTemplate,
+    }),
   ],
 
   resolveLoader: {
@@ -80,7 +77,9 @@ module.exports = {
         test: /\.css$/,
         loader: ExtractTextPlugin.extract({
           fallbackLoader: 'style-loader',
-          loader: 'css-loader',
+          loader: [
+            { loader: 'css-loader' },
+          ],
         }),
       },
       {
@@ -90,9 +89,13 @@ module.exports = {
           loader: [
             {
               loader: 'css-loader',
-              options: {
-                module: true,
+              // TODO: It seems this should be named `options` but currently
+              // extract-text-wepback plugin only supports `query`. See:
+              // https://github.com/webpack/extract-text-webpack-plugin/issues/302
+              query: {
+                modules: true,
                 importLoaders: 2,
+                localIdentName: '[hash:base64:8]',
               },
             },
             { loader: 'postcss-loader' },
