@@ -1,11 +1,18 @@
 {
   "name": "app-time",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "main": "index.js",
   "author": "Ian Sinnott <ian@iansinnott.com>",
   "license": "MIT",
   "scripts": {
-    "lint": "eslint packages"
+    "lint": "eslint packages",
+    "test": "echo 'No tests yet.'",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags",
+    "bump:patch": "npm version patch -m \"v%s\"",
+    "bump:minor": "npm version minor -m \"v%s\"",
+    "bump:major": "npm version major -m \"v%s\"",
+    "bump": "npm run bump:patch"
   },
   "bin": {
     "app-time": "./packages/app-scripts/bin/app-time.js"
