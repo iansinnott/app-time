@@ -60,6 +60,19 @@ module.exports = {
         test: /\.js$/,
         include: resolveApp('./client'),
         loader: 'babel-loader',
+        query: {
+          babelrc: false,
+          presets: [
+            ['es2015', { modules: false }],
+            'react',
+            'stage-1',
+          ],
+          env: {
+            development: {
+              presets: ['react-hmre'],
+            },
+          },
+        },
       },
       {
         test: /\.css$/,
