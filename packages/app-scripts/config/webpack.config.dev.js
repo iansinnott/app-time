@@ -3,7 +3,7 @@ const rupture = require('rupture');
 const autoprefixer = require('autoprefixer');
 const debug = require('debug')('app-time:app-scripts:config:dev'); // eslint-disable-line no-unused-vars
 
-const { resolveApp, ownNodeModules, resolveOwnModule } = require('../utils/paths.js');
+const { resolveApp, ownNodeModules } = require('../utils/paths.js');
 
 // Set up dev host host and HMR host. For the dev host this is pretty self
 // explanatory: We use a different live-reload server to server our static JS
@@ -20,8 +20,8 @@ module.exports = {
 
   entry: {
     app: [
-      resolveOwnModule('normalize.css'),
-      resolveOwnModule(`webpack-hot-middleware/client?path=${HMR_HOST}`),
+      'normalize.css',
+      `webpack-hot-middleware/client?path=${HMR_HOST}`,
       resolveApp('./client/index.js'),
     ],
   },
@@ -50,12 +50,17 @@ module.exports = {
     }),
   ],
 
+  // NOTE: We try to resolve loaders first locally then within the app
+  // directory. This issue mainly arrose during development using
+  // yarn link app-time. In practice because of dependency flattening the
+  // loaders will mostly likely be found in the user-app's node_modules
   resolveLoader: {
-    modules: [ownNodeModules],
+    modules: [
+      ownNodeModules,
+      resolveApp('./node_modules'),
+    ],
   },
 
-  // NOTE: Babel tries to resolve relative to the app, so we need to be
-  // explicit about requiring from ownNodeModules
   module: {
     rules: [
       {
@@ -65,13 +70,13 @@ module.exports = {
         query: {
           babelrc: false,
           presets: [
-            [resolveOwnModule('babel-preset-es2015'), { modules: false }], // See NOTE
-            resolveOwnModule('babel-preset-react'),
-            resolveOwnModule('babel-preset-stage-1'),
+            ['babel-preset-es2015', { modules: false }],
+            'babel-preset-react',
+            'babel-preset-stage-1',
           ],
           env: {
             development: {
-              presets: [resolveOwnModule('babel-preset-react-hmre')],
+              presets: ['babel-preset-react-hmre'],
             },
           },
         },
