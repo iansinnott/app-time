@@ -3,6 +3,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const rupture = require('rupture');
 const ReactStaticPlugin = require('react-static-webpack-plugin');
 const autoprefixer = require('autoprefixer');
+const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:config:prod'); // eslint-disable-line no-unused-vars
 
 const { resolveApp, ownNodeModules } = require('../utils/paths.js');
@@ -18,7 +19,13 @@ debug('declared template file', staticTemplate);
 
 // Assert this just to be safe.
 if (process.env.NODE_ENV !== 'production') {
-  throw new Error('Production builds must have NODE_ENV=production.');
+  console.log(
+    `Production builds must have ${chalk.underline('NODE_ENV=production')}. Try:
+
+    ${chalk.cyan('$ NODE_ENV=production app-time build')}
+    `
+  );
+  throw new Error('Tried to build for production in non-production environment.');
 }
 
 module.exports = {
@@ -77,6 +84,14 @@ module.exports = {
         test: /\.js$/,
         exclude: resolveApp('./node_modules'),
         loader: 'babel-loader',
+        query: {
+          babelrc: false,
+          presets: [
+            ['es2015', { modules: false }],
+            'react',
+            'stage-1',
+          ],
+        },
       },
       {
         test: /\.css$/,
