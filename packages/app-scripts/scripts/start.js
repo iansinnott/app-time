@@ -2,6 +2,10 @@
  * NOTE: This file must be run with babel-node as Node is not yet compatible
  * with all of ES6 and we also use JSX.
  */
+
+// Ensure development builds of all imported modules
+process.env.NODE_ENV = 'development';
+
 const React = require('react');
 const url = require('url');
 const { renderToStaticMarkup } = require('react-dom/server');
@@ -72,6 +76,7 @@ app.get('*', (req, res) => {
 // though we are only interested in the port.
 const { port } = url.parse('http:' + config.output.publicPath);
 
+// Start the dev server
 app.listen(port, 'localhost', err => {
   if (err) {
     console.error(err);

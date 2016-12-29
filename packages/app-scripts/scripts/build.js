@@ -1,3 +1,6 @@
+// Make sure everything is running in production mode
+process.env.NODE_ENV = 'production';
+
 const webpack = require('webpack');
 const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:scripts:build'); // eslint-disable-line no-unused-vars

@@ -5,10 +5,12 @@ const babel = require('babel-core');
 
 const { resolveOwnModule } = require('./paths.js');
 
+// NOTE: These options are duplicated elsewhere. Might be a good idea to
+// refactor into a config file
 const babelOptions = {
   babelrc: false,
   presets: [
-    [resolveOwnModule('babel-preset-es2015'), { modules: false }], // See NOTE
+    [resolveOwnModule('babel-preset-es2015'), { modules: false }],
     resolveOwnModule('babel-preset-react'),
     resolveOwnModule('babel-preset-stage-1'),
   ],
