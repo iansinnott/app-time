@@ -75,7 +75,7 @@ module.exports = {
   ],
 
   resolveLoader: {
-    modules: [ownNodeModules], // Is this `root`?
+    modules: [ownNodeModules],
   },
 
   module: {

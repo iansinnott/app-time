@@ -1,16 +1,9 @@
-/**
- * =============================================================================
- *                     WARNING! COMPLETELY UNFINISHED
- * =============================================================================
- *
- * This is currently just a placeholder before the `app-time start` command is
- * ipmlemented, which will run based on this config.
- */
-
-const path = require('path');
 const webpack = require('webpack');
 const rupture = require('rupture');
 const autoprefixer = require('autoprefixer');
+const debug = require('debug')('app-time:app-scripts:config:dev'); // eslint-disable-line no-unused-vars
+
+const { resolveApp, ownNodeModules } = require('../utils/paths.js');
 
 // Set up dev host host and HMR host. For the dev host this is pretty self
 // explanatory: We use a different live-reload server to server our static JS
@@ -29,12 +22,12 @@ module.exports = {
     app: [
       'normalize.css',
       'webpack-hot-middleware/client?path=' + HMR_HOST,
-      './client/index.js',
+      resolveApp('./client/index.js'),
     ],
   },
 
   output: {
-    path: path.join(__dirname, 'public'),
+    path: resolveApp('./public'), // TODO: Why are we using public here?
     filename: '[name].js',
     publicPath: DEV_HOST,
   },
@@ -50,13 +43,22 @@ module.exports = {
         },
       },
     }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('development'),
+      },
+    }),
   ],
+
+  resolveLoader: {
+    modules: [ownNodeModules],
+  },
 
   module: {
     rules: [
       {
         test: /\.js$/,
-        include: path.join(__dirname, 'client'),
+        include: resolveApp('./client'),
         loader: 'babel-loader',
       },
       {
@@ -72,16 +74,14 @@ module.exports = {
           { loader: 'style-loader' },
           {
             loader: 'css-loader',
-            options: {
-              module: true,
+            query: {
+              modules: true,
               importLoaders: 2,
               localIdentName: '[name]__[local]__[hash:base64:6]',
             },
           },
           { loader: 'postcss-loader' },
-          {
-            loader: 'stylus-loader',
-          },
+          { loader: 'stylus-loader' },
         ],
       },
       {

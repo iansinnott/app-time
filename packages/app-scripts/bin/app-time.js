@@ -5,6 +5,7 @@ const script = process.argv[2];
 const args = process.argv.slice(3);
 
 switch (script) {
+case 'start':
 case 'build':
   const result = spawnSync(
     'node',
@@ -14,7 +15,6 @@ case 'build':
   process.exitCode = result.status;
   break;
 case 'eject': // TODO
-case 'start': // TODO
 case 'test': // TODO
   console.log(`Script "${script}" is not yet ready. It is still under development.`);
   console.log('Check the repo for updates');
