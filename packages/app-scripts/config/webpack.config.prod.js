@@ -16,6 +16,11 @@ const staticTemplate = resolveApp('./template.js');
 debug('declared routes file', staticRoutes);
 debug('declared template file', staticTemplate);
 
+// Assert this just to be safe.
+if (process.env.NODE_ENV !== 'production') {
+  throw new Error('Production builds must have NODE_ENV=production.');
+}
+
 module.exports = {
   devtool: 'source-map',
 
