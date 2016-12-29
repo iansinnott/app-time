@@ -9,32 +9,26 @@ const express = require('express');
 const webpack = require('webpack');
 const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:scripts:start'); // eslint-disable-line no-unused-vars
-const escapeRegExp = require('lodash.escaperegexp');
 
 const { resolveApp } = require('../utils/paths.js');
 const config = require('../config/webpack.config.dev.js');
+const babelRequire = require('../utils/babelRequire.js');
 const templatePath = resolveApp('./template.js');
 
 debug('templatePath', templatePath);
 
-// Hook up babel register but only for the single path to the template file
-require('babel-register')({
-  only: new RegExp(escapeRegExp(templatePath)),
-});
-
 let Html;
 
-try {
-  Html = require(templatePath);
-} catch (err) {
-  debug(`Error requiring template file: ${chalk.cyan(templatePath)}`, err);
-}
-
-if (!Html) {
-  console.log(chalk.red('Error: No template file found.'));
-  console.log();
-  process.exit(1);
-}
+babelRequire(
+  templatePath,
+  x => { Html = x; },
+  err => {
+    debug(`Error requiring template file: ${chalk.cyan(templatePath)}`, err);
+    console.log(chalk.red(`Error: Could not parse template file at "${templatePath}".`));
+    console.log();
+    process.exit(1);
+  }
+);
 
 /**
  * Render the entire web page to a string. We use render to static markup here

@@ -3,7 +3,7 @@ const rupture = require('rupture');
 const autoprefixer = require('autoprefixer');
 const debug = require('debug')('app-time:app-scripts:config:dev'); // eslint-disable-line no-unused-vars
 
-const { resolveApp, ownNodeModules } = require('../utils/paths.js');
+const { resolveApp, ownNodeModules, resolveOwnModule } = require('../utils/paths.js');
 
 // Set up dev host host and HMR host. For the dev host this is pretty self
 // explanatory: We use a different live-reload server to server our static JS
@@ -20,8 +20,8 @@ module.exports = {
 
   entry: {
     app: [
-      'normalize.css',
-      'webpack-hot-middleware/client?path=' + HMR_HOST,
+      resolveOwnModule('normalize.css'),
+      resolveOwnModule(`webpack-hot-middleware/client?path=${HMR_HOST}`),
       resolveApp('./client/index.js'),
     ],
   },
@@ -54,6 +54,8 @@ module.exports = {
     modules: [ownNodeModules],
   },
 
+  // NOTE: Babel tries to resolve relative to the app, so we need to be
+  // explicit about requiring from ownNodeModules
   module: {
     rules: [
       {
@@ -63,13 +65,13 @@ module.exports = {
         query: {
           babelrc: false,
           presets: [
-            ['es2015', { modules: false }],
-            'react',
-            'stage-1',
+            [resolveOwnModule('babel-preset-es2015'), { modules: false }], // See NOTE
+            resolveOwnModule('babel-preset-react'),
+            resolveOwnModule('babel-preset-stage-1'),
           ],
           env: {
             development: {
-              presets: ['react-hmre'],
+              presets: [resolveOwnModule('babel-preset-react-hmre')],
             },
           },
         },

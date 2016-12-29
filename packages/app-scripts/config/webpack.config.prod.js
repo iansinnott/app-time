@@ -6,7 +6,7 @@ const autoprefixer = require('autoprefixer');
 const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:config:prod'); // eslint-disable-line no-unused-vars
 
-const { resolveApp, ownNodeModules } = require('../utils/paths.js');
+const { resolveApp, ownNodeModules, resolveOwnModule } = require('../utils/paths.js');
 
 debug('resolving loaders to:', ownNodeModules);
 debug('resolving everything else to:', resolveApp('./'));
@@ -78,6 +78,8 @@ module.exports = {
     modules: [ownNodeModules],
   },
 
+  // NOTE: Babel tries to resolve relative to the app, so we need to be
+  // explicit about requiring from ownNodeModules
   module: {
     rules: [
       {
@@ -87,9 +89,9 @@ module.exports = {
         query: {
           babelrc: false,
           presets: [
-            ['es2015', { modules: false }],
-            'react',
-            'stage-1',
+            [resolveOwnModule('babel-preset-es2015'), { modules: false }], // See NOTE
+            resolveOwnModule('babel-preset-react'),
+            resolveOwnModule('babel-preset-stage-1'),
           ],
         },
       },
@@ -109,9 +111,6 @@ module.exports = {
           loader: [
             {
               loader: 'css-loader',
-              // TODO: It seems this should be named `options` but currently
-              // extract-text-wepback plugin only supports `query`. See:
-              // https://github.com/webpack/extract-text-webpack-plugin/issues/302
               query: {
                 modules: true,
                 importLoaders: 2,
