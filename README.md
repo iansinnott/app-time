@@ -11,7 +11,7 @@ Add these scripts to `package.json`:
 ```json
 {
   "scripts": {
-    "start": "app-time start"
+    "start": "app-time start",
     "build": "app-time build"
   }
 }
