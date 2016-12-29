@@ -10,5 +10,4 @@ module.exports = {
   ownNodeModules, // TODO: This might need to be localized into a app-scripts
   resolveApp,
   resolveOwn,
-  resolveOwnModule(request) { return `${ownNodeModules}/${request}`; },
 };
