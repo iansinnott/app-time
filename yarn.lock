@@ -3450,9 +3450,9 @@ react-router@^3.0.0:
     loose-envify "^1.2.0"
     warning "^3.0.0"
 
-react-static-webpack-plugin@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/react-static-webpack-plugin/-/react-static-webpack-plugin-2.0.2.tgz#cd5d94c456c0b6836a9010f2d735da798b38935e"
+"react-static-webpack-plugin@>= 2.0.3":
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/react-static-webpack-plugin/-/react-static-webpack-plugin-2.0.3.tgz#ee33ed2dc6495e52fcd02ef9f3b6d12d0dc17312"
   dependencies:
     bluebird "^3.4.1"
     debug "^2.2.0"
