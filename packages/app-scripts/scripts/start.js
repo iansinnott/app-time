@@ -15,9 +15,22 @@ const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:scripts:start'); // eslint-disable-line no-unused-vars
 
 const { resolveApp } = require('../utils/paths.js');
-const config = require('../config/webpack.config.dev.js');
 const babelRequire = require('../utils/babelRequire.js');
+const clearConsole = require('../utils/clearConsole.js');
+const config = require('../config/webpack.config.dev.js');
 const templatePath = resolveApp('./template.js');
+
+// NOTE: url.parse can't handle URLs without a protocol explicitly defined. So
+// if we parse '//localhost:8888' it doesn't work. We manually add a protocol even
+// though we are only interested in the port.
+const { port } = url.parse('http:' + config.output.publicPath);
+
+const isInteractive = process.stdout.isTTY;
+const isDebug = !!process.env.DEBUG;
+const shouldClearConsole = isInteractive && !isDebug;
+
+if (shouldClearConsole) clearConsole();
+console.log('Initializing app-time dev server...');
 
 debug('templatePath', templatePath);
 
@@ -27,7 +40,7 @@ babelRequire(
   templatePath,
   x => { Html = x; },
   err => {
-    debug(`Error requiring template file: ${chalk.cyan(templatePath)}`, err);
+    debug(`Error requiring template file: ${chalk.cyan.bold(templatePath)}`, err);
     console.log(chalk.red(`Error: Could not parse template file at "${templatePath}".`));
     console.log();
     process.exit(1);
@@ -54,9 +67,64 @@ const renderDocumentToString = props => {
 const app = express();
 const compiler = webpack(config);
 
+/**
+ * state: boolean. Indicates completion of the compilation.
+ * stats: Object. Webpack stats: https://webpack.github.io/docs/node.js-api.html#stats-tojson
+ * options: Object. The options passed to the dev server, of which this reporter is itself a part.
+ *
+ * NOTE: I renamed state for semantic reasons. I thought it was unclear what
+ * "state" meant.
+ */
+const reporter = ({ state, stats, options }) => {
+  const isComplete = !!state; // See NOTE
+
+  if (!isComplete) {
+    console.log(chalk.yellow('Compiling...'));
+    console.log();
+    return;
+  }
+
+  if (shouldClearConsole) clearConsole();
+
+  console.log(`Dev server listening at ${chalk.cyan.bold(`http://localhost:${port}`)}`);
+  console.log();
+
+  // Log all stats. Coloring is automatic
+  console.log(stats.toString({
+    colors: true,
+    version: true,
+    timings: true,
+    assets: true,
+    errors: true,
+    errorDetails: true,
+    warnings: true,
+    hash: false,
+    chunks: false,
+    modules: false,
+    reasons: false,
+    children: true,
+    source: false,
+    publicPath: false
+  }));
+  console.log();
+
+  if(stats.hasErrors()) {
+    console.log(chalk.red.bold('Failed to compile.'));
+    console.log();
+  } else if(stats.hasWarnings()) {
+    console.log(chalk.yellow.bold('Compiled with warnings.'));
+    console.log();
+  }
+};
+
 app.use(require('webpack-dev-middleware')(compiler, {
-  noInfo: true,
   publicPath: config.output.publicPath,
+
+  // Silence default output and add custom reporter (Not sure if the silencing
+  // part actually works...)
+  noInfo: true,
+  quiet: true,
+  reporter,
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
@@ -71,16 +139,12 @@ app.get('*', (req, res) => {
   res.send(html);
 });
 
-// NOTE: url.parse can't handle URLs without a protocol explicitly defined. So
-// if we parse '//localhost:8888' it doesn't work. We manually add a protocol even
-// though we are only interested in the port.
-const { port } = url.parse('http:' + config.output.publicPath);
-
 // Start the dev server
 app.listen(port, 'localhost', err => {
   if (err) {
     console.error(err);
     return;
   }
-  console.log(`Dev server listening at ${chalk.cyan(`http://localhost:${port}`)}`);
+
+  // Logging is handled in the webpack-dev-middleware reporter
 });

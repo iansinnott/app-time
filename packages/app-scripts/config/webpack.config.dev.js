@@ -50,6 +50,11 @@ module.exports = {
     }),
   ],
 
+  // Disable performance warning hints in dev mode
+  performance: {
+    hints: false
+  },
+
   // NOTE: We try to resolve loaders first locally then within the app
   // directory. This issue mainly arrose during development using
   // yarn link app-time. In practice because of dependency flattening the
