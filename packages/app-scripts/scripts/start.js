@@ -31,7 +31,7 @@ const isDebug = !!process.env.DEBUG;
 const shouldClearConsole = isInteractive && !isDebug;
 
 if (shouldClearConsole) clearConsole();
-console.log('Initializing app-time dev server...');
+console.log('Initializing dev server...');
 
 debug('templatePath', templatePath);
 
