@@ -18,6 +18,7 @@ const { resolveApp } = require('../utils/paths.js');
 const babelRequire = require('../utils/babelRequire.js');
 const clearConsole = require('../utils/clearConsole.js');
 const config = require('../config/webpack.config.dev.js');
+const { devOptions: statsOptions } = require('../config/stats.js');
 const templatePath = resolveApp('./template.js');
 
 // NOTE: url.parse can't handle URLs without a protocol explicitly defined. So
@@ -90,22 +91,7 @@ const reporter = ({ state, stats, options }) => {
   console.log();
 
   // Log all stats. Coloring is automatic
-  console.log(stats.toString({
-    colors: true,
-    version: true,
-    timings: true,
-    assets: true,
-    errors: true,
-    errorDetails: true,
-    warnings: true,
-    hash: false,
-    chunks: false,
-    modules: false,
-    reasons: false,
-    children: true,
-    source: false,
-    publicPath: false
-  }));
+  console.log(stats.toString(statsOptions));
   console.log();
 
   if(stats.hasErrors()) {

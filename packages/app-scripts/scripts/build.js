@@ -6,6 +6,7 @@ const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:scripts:build'); // eslint-disable-line no-unused-vars
 
 const config = require('../config/webpack.config.prod.js');
+const { prodOptions: statsOptions } = require('../config/stats.js');
 
 // Print out errors
 function printErrors(summary, errors) {
@@ -31,8 +32,20 @@ const build = () => {
       return;
     }
 
-    console.log(chalk.green('Compiled successfully.'));
+    // Log all stats. Coloring is automatic
+    console.log(stats.toString(statsOptions));
     console.log();
+
+    if(stats.hasErrors()) {
+      console.log(chalk.red.bold('Failed to compile.'));
+      console.log();
+    } else if(stats.hasWarnings()) {
+      console.log(chalk.yellow.bold('Compiled with warnings.'));
+      console.log();
+    } else {
+      console.log(chalk.green.bold('Compilation successful 🎉'));
+      console.log();
+    }
   });
 };
 
