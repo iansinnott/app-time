@@ -76,7 +76,7 @@ module.exports = {
 
   // Enable performance warning hints in prod mode
   performance: {
-    hints: true
+    hints: 'warning',
   },
 
   // NOTE: We try to resolve loaders first locally then within the app
