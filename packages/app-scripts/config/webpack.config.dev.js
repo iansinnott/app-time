@@ -5,23 +5,27 @@ const debug = require('debug')('app-time:app-scripts:config:dev'); // eslint-dis
 
 const { resolveApp, ownNodeModules } = require('../utils/paths.js');
 
-// Set up dev host host and HMR host. For the dev host this is pretty self
-// explanatory: We use a different live-reload server to server our static JS
-// files in dev, so we need to be able to actually point a script tag to that
-// host so it can load the right files. The HRM host is a bit stranger. For more
-// details on why we need this URL see the readme and:
-// https://github.com/glenjamin/webpack-hot-middleware/issues/37
+// Set up dev host. We do this so that it's possible to configure the URL our
+// script tag gets in dev mode. For instance if running the dev server in a
+// VirtualBox VM we can do this: $ DEV_HOSTNAME=10.0.2.2 app-time start
+// And we end up with a script tag in the template that points to
+// '//10.0.2.2:3000'. That IP address just happens to be address of localhost on
+// the host machine within a VB virtual machine.
 const DEV_PORT = process.env.DEV_PORT || 3000;
-const DEV_HOST = '//localhost:' + DEV_PORT + '/';
-const HMR_HOST = DEV_HOST + '__webpack_hmr';
+const DEV_HOSTNAME = process.env.DEV_HOSTNAME || 'localhost';
 
+// In case the user wants to they can specify the entire host in one varaible.
+const DEV_HOST = process.env.DEV_HOST || `//${DEV_HOSTNAME}:${DEV_PORT}/`;
+
+// NOTE: Appending __webpack_hmr to the dev host is what allows HMR to work. For
+// more details see: https://github.com/glenjamin/webpack-hot-middleware/issues/37
 module.exports = {
   devtool: 'inline-source-map',
 
   entry: {
     app: [
       'normalize.css',
-      `webpack-hot-middleware/client?path=${HMR_HOST}`,
+      `webpack-hot-middleware/client?path=${DEV_HOST}__webpack_hmr`, // See note above
       resolveApp('./client/index.js'),
     ],
   },
