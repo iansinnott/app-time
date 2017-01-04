@@ -29,9 +29,10 @@ const customConfigPath = resolveApp('apptime.config.prod.js');
  * then be passed to the custom configurator function.
  */
 const getDefaults = (config) => {
-  const hmrEntry = config.entry.app[0];
+  const polyfill = config.entry.app[0];
   return {
-    hmrEntry,
+    hmrEntry: null,
+    polyfill,
   };
 };
 

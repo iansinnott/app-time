@@ -33,7 +33,7 @@ module.exports = {
 
   entry: {
     app: [
-      'normalize.css',
+      'core-js',
       resolveApp('./client/index.js'),
     ],
   },
