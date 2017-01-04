@@ -6,6 +6,7 @@
 // Ensure development builds of all imported modules
 process.env.NODE_ENV = 'development';
 
+const fs = require('fs');
 const React = require('react');
 const url = require('url');
 const { renderToStaticMarkup } = require('react-dom/server');
@@ -33,15 +34,48 @@ const shouldClearConsole = isInteractive && !isDebug;
 if (shouldClearConsole) clearConsole();
 console.log('Initializing dev server...');
 
-debug('templatePath', templatePath);
+const customConfigPath = resolveApp('apptime.config.dev.js');
+
+/**
+ * This takes in the configuration and returns useful default options which can
+ * then be passed to the custom configurator function.
+ */
+const getDefaults = (config) => {
+  const hmrEntry = config.entry.app[0];
+  return {
+    hmrEntry,
+  };
+};
+
+let finalConfig = config;
+if (fs.existsSync(customConfigPath)) {
+  console.log(`Using custom configurator from: ${chalk.cyan.bold(customConfigPath)}`);
+  console.log();
+
+  const handleFailure = err => {
+    debug(`Error requiring file: ${chalk.cyan.bold(customConfigPath)}`, err);
+    console.log(chalk.red(`Error: Could not parse config file at "${customConfigPath}".`));
+    console.log();
+    process.exit(1);
+  };
+
+  try {
+    babelRequire(
+      customConfigPath,
+      configure => { finalConfig = configure(config, getDefaults(config)); },
+      handleFailure
+    );
+  } catch (err) {
+    handleFailure(err);
+  }
+}
 
 let Html;
-
 babelRequire(
   templatePath,
   x => { Html = x; },
   err => {
-    debug(`Error requiring template file: ${chalk.cyan.bold(templatePath)}`, err);
+    debug(`Error requiring file: ${chalk.cyan.bold(templatePath)}`, err);
     console.log(chalk.red(`Error: Could not parse template file at "${templatePath}".`));
     console.log();
     process.exit(1);
@@ -66,7 +100,7 @@ const renderDocumentToString = props => {
 };
 
 const app = express();
-const compiler = webpack(config);
+const compiler = webpack(finalConfig);
 
 /**
  * state: boolean. Indicates completion of the compilation.
@@ -104,7 +138,7 @@ const reporter = ({ state, stats, options }) => {
 };
 
 app.use(require('webpack-dev-middleware')(compiler, {
-  publicPath: config.output.publicPath,
+  publicPath: finalConfig.output.publicPath,
 
   // Silence default output and add custom reporter (Not sure if the silencing
   // part actually works...)
@@ -120,7 +154,7 @@ app.use(require('webpack-hot-middleware')(compiler));
 // before they are served when in dev mode.
 app.get('*', (req, res) => {
   const html = renderDocumentToString({
-    bundle: config.output.publicPath + 'app.js',
+    bundle: finalConfig.output.publicPath + 'app.js',
   });
   res.send(html);
 });

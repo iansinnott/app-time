@@ -21,6 +21,40 @@ Add these scripts to `package.json`:
 }
 ```
 
+## Custom Configuration
+
+**NOTE:** This project comes with defaults that may work for your project. Configuration should only be necessary once you need to customize something or add features not included by default.
+
+If you need more control over how App Time is configured you can provide one or both of `apptime.config.dev.js` or `apptime.config.prod.js` files at the root of your project. If either of these files is detected App Time will read it and use it to generate the final webpack configuration.
+
+Each of these files is _a lot_ like a standard `webpack.config.js` file except that it is defined as a function which must **return** the final wepback configuration. This allows you to customize only parts of the webpack configuration while maintaining other benefits of this project.
+
+#### Example
+
+If you wanted to specify an entry point for an `app` bundle which included `normalize.css` and `font-awesome` you could create a `apptime.config.dev.js` file at the root of your project like so:
+
+```js
+// apptime.config.dev.js
+module.exports = (config, defaults) => ({
+  ...config,
+  entry: {
+    app: [
+      'normalize.css',
+      'font-awesome/css/font-awesome.css',
+      defaults.hmrEntry,
+      './client/index.js',
+    ],
+  },
+});
+```
+
+`defaults.hmrEntry` is the entry point that allows hot reloading to function, so be sure to include it.
+
+#### Common Reasons to use a custom `apptime.config.js`:
+
+* Add/modify app entrypoints
+* Add new loaders or plugins
+
 ## Scripts
 
 ### `start`
