@@ -56,6 +56,7 @@
     "webpack-dashboard": "^0.2.1",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-hot-middleware": "^2.14.0",
+    "webpack-manifest-plugin": "^1.1.0",
     "yargs": "^6.6.0"
   }
 }

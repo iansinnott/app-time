@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const rupture = require('rupture');
 const ReactStaticPlugin = require('react-static-webpack-plugin');
+const ManifestPlugin = require('webpack-manifest-plugin');
 const autoprefixer = require('autoprefixer');
 const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:config:prod'); // eslint-disable-line no-unused-vars
@@ -28,6 +29,8 @@ if (process.env.NODE_ENV !== 'production') {
   throw new Error('Tried to build for production in non-production environment.');
 }
 
+const publicPath = '/';
+
 module.exports = {
   devtool: 'source-map',
 
@@ -40,8 +43,9 @@ module.exports = {
 
   output: {
     path: resolveApp('./build'),
-    filename: '[name].js',
-    publicPath: '/',
+    filename: '[name].[chunkhash:8].js',
+    chunkFilename: '[name].[chunkhash:8].chunk.js', // TODO: What does this do?
+    publicPath,
   },
 
   plugins: [
@@ -55,7 +59,7 @@ module.exports = {
       },
     }),
     new ExtractTextPlugin({
-      filename: '[name].css',
+      filename: '[name].[contenthash:8].css',
       allChunks: true,
     }),
     new webpack.DefinePlugin({
@@ -68,6 +72,11 @@ module.exports = {
       sourceMap: true,
       compressor: { warnings: false },
     }),
+
+    // NOTE: NOTE **!AGAIN!**. It is imperative that this plugin comes before
+    // the static site plugin in order to be able to use the generated manifest
+    // file within the template
+    new ManifestPlugin({ publicPath }),
     new ReactStaticPlugin({
       routes: staticRoutes,
       template: staticTemplate,
@@ -148,7 +157,7 @@ module.exports = {
       {
         test: /\.(png|jpg|gif|ico)$/,
         use: [
-          { loader: 'file-loader', options: { name: '[name].[ext]' } },
+          { loader: 'file-loader', options: { name: '[name].[hash:8].[ext]' } },
         ],
       },
     ],
