@@ -52,6 +52,7 @@
     "stylus-loader": "^2.4.0",
     "url-loader": "^0.5.7",
     "webpack": "beta",
+    "webpack-bundle-analyzer": "^2.2.1",
     "webpack-dashboard": "^0.2.1",
     "webpack-dev-middleware": "^1.9.0",
     "webpack-hot-middleware": "^2.14.0",

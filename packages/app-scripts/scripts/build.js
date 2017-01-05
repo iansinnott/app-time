@@ -6,6 +6,8 @@ const webpack = require('webpack');
 const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:scripts:build'); // eslint-disable-line no-unused-vars
 const ora = require('ora');
+const { argv } = require('yargs');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 const config = require('../config/webpack.config.prod.js');
 const { prodOptions: statsOptions } = require('../config/stats.js');
@@ -21,6 +23,8 @@ function printErrors(summary, errors) {
     console.log();
   });
 }
+
+debug('argv', argv);
 
 const customConfigPath = resolveApp('apptime.config.prod.js');
 
@@ -61,8 +65,20 @@ if (fs.existsSync(customConfigPath)) {
 
 const build = () => {
   const spinner = ora('Compiling...').start();
+  const compiler = webpack(finalConfig);
 
-  webpack(finalConfig).run((err, stats) => {
+  // Add the analyzer plugin if the user requests it with the --analyze flag
+  if (argv.analyze) {
+    debug('Applying BundleAnalyzerPlugin...');
+    compiler.apply(new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: 'webpack-bundle-analyzer-report.html',
+      generateStatsFile: true, // Output stats.json in case the user wants to do something with it
+      statsFilename: 'webpack-bundle-analyzer-stats.json',
+    }));
+  }
+
+  compiler.run((err, stats) => {
     if (err) {
       spinner.fail();
       printErrors('Failed to compile', [err]);
