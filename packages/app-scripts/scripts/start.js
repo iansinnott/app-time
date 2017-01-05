@@ -14,6 +14,9 @@ const express = require('express');
 const webpack = require('webpack');
 const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:scripts:start'); // eslint-disable-line no-unused-vars
+const Dashboard = require('webpack-dashboard');
+const DashboardPlugin = require('webpack-dashboard/plugin');
+const { argv } = require('yargs');
 
 const { resolveApp } = require('../utils/paths.js');
 const babelRequire = require('../utils/babelRequire.js');
@@ -33,6 +36,8 @@ const shouldClearConsole = isInteractive && !isDebug;
 
 if (shouldClearConsole) clearConsole();
 console.log('Initializing dev server...');
+
+debug('argv', argv);
 
 const customConfigPath = resolveApp('apptime.config.dev.js');
 
@@ -102,6 +107,11 @@ const renderDocumentToString = props => {
 const app = express();
 const compiler = webpack(finalConfig);
 
+if (argv.dashboard) {
+  const dashboard = new Dashboard();
+  compiler.apply(new DashboardPlugin(dashboard.setData));
+}
+
 /**
  * state: boolean. Indicates completion of the compilation.
  * stats: Object. Webpack stats: https://webpack.github.io/docs/node.js-api.html#stats-tojson
@@ -144,10 +154,13 @@ app.use(require('webpack-dev-middleware')(compiler, {
   // part actually works...)
   noInfo: true,
   quiet: true,
-  reporter,
+
+  // Only use the custom reporter if not using dashboard
+  reporter: argv.dashboard ? undefined : reporter,
 }));
 
-app.use(require('webpack-hot-middleware')(compiler));
+// NOTE: An empty logger is required for the wepback-dashboard plugin
+app.use(require('webpack-hot-middleware')(compiler, argv.dashboard ? { log(){} } : undefined));
 
 // Send the boilerplate HTML payload down for all get requests. Routing will be
 // handled entirely client side and we don't make an effort to pre-render pages

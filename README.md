@@ -61,6 +61,14 @@ module.exports = (config, defaults) => ({
 
 Start a dev server at [localhost:3000](http://localhost:3000)
 
+You can also start the dev server using [webpack-dashboard](https://github.com/FormidableLabs/webpack-dashboard/) using the `--dashboard` flag. Example:
+
+```
+app-time start --dashboard
+```
+
+**NOTE:** There is no preferred way to run the dev server. If you like the dashboard then use it. If it's too much for you then stick to the minimal default version 😁.
+
 ### `build`
 
 Compile all project assets and generate static HTML files for each route in your react-router config.
