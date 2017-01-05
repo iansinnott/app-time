@@ -73,6 +73,14 @@ app-time start --dashboard
 
 Compile all project assets and generate static HTML files for each route in your react-router config.
 
+You can also generate a build report as well as a JSON stats file from the production webpack build using the `--analyze` flag. Example:
+
+```
+app-time build --analyze
+```
+
+This will generate an HTML report to `webpack-bundle-analyzer-report.html` as well as a stats file to `webpack-bundle-analyzer-stats.json`.
+
 ## ⚠ Under Development ⚠
 
 This project is under active development and this is just the initial version. There are still many things missing which would likely make it more appealing to a wider audience. For example:
