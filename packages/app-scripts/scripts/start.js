@@ -7,6 +7,7 @@
 process.env.NODE_ENV = 'development';
 
 const fs = require('fs');
+const path = require('path');
 const React = require('react');
 const url = require('url');
 const { renderToStaticMarkup } = require('react-dom/server');
@@ -166,9 +167,29 @@ app.use(require('webpack-hot-middleware')(compiler, argv.dashboard ? { log(){} }
 // handled entirely client side and we don't make an effort to pre-render pages
 // before they are served when in dev mode.
 app.get('*', (req, res) => {
+  const { publicPath } = finalConfig.output;
+
+  // Create a mock manifest object to pass to the dev template.
+  // TODO: Is this silly? Every user has access to their own template file and
+  // they could perform a manual logic branch on process.env.NODE_ENV and decide
+  // what path to use for their scripts and css files... Hopefully this isn't
+  // too much magic. There's also absolutely no guarantee that the prod manifest
+  // would look like the one generated here
+  const mockManifest = Object.keys(finalConfig.entry)
+    .map(x => [
+      `${publicPath}${x}.js`,
+      `${publicPath}${x}.css`,
+    ])
+    .reduce((agg, paths) => {
+      paths.forEach(x => { agg[path.basename(x)] = x; });
+      return agg;
+    }, {});
+
   const html = renderDocumentToString({
-    bundle: finalConfig.output.publicPath + 'app.js',
+    bundle: publicPath + 'app.js',
+    manifest: mockManifest,
   });
+
   res.send(html);
 });
 
