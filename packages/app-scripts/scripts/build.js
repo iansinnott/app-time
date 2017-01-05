@@ -75,6 +75,7 @@ const build = () => {
       reportFilename: 'webpack-bundle-analyzer-report.html',
       generateStatsFile: true, // Output stats.json in case the user wants to do something with it
       statsFilename: 'webpack-bundle-analyzer-stats.json',
+      openAnalyzer: false, // Do not open browser on completion
     }));
   }
 
