@@ -8,6 +8,7 @@ const debug = require('debug')('app-time:app-scripts:scripts:build'); // eslint-
 const ora = require('ora');
 const { argv } = require('yargs');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const ReactStaticPlugin = require('react-static-webpack-plugin');
 
 const config = require('../config/webpack.config.prod.js');
 const { prodOptions: statsOptions } = require('../config/stats.js');
@@ -29,14 +30,27 @@ debug('argv', argv);
 const customConfigPath = resolveApp('apptime.config.prod.js');
 
 /**
- * This takes in the configuration and returns useful default options which can
- * then be passed to the custom configurator function.
+ * This takes in the configuration and returns useful utils which can then be
+ * passed to the custom configurator function.
+ *
+ * TODO: Another approach to allow surgical precision in configuring the webpack
+ * config would be to use lenses. Just something to think about.
  */
-const getDefaults = (config) => {
+const getApptimeUtils = (config) => {
   const polyfill = config.entry.app[0];
   return {
     hmrEntry: null,
     polyfill,
+
+    // This is important if the user wants use redux. In order to specify the
+    // store the user needs to be able to configure the plugin
+    ReactStaticPlugin(options) {
+      debug('ReactStaticPlugin provided with options', options);
+      const plugins = config.plugins.slice(); // Do not mutate original
+      plugins.pop(); // Strip existing static plugin
+      plugins.push(new ReactStaticPlugin(options));
+      return Object.assign({}, config, { plugins });
+    },
   };
 };
 
@@ -55,7 +69,7 @@ if (fs.existsSync(customConfigPath)) {
   try {
     babelRequire(
       customConfigPath,
-      configure => { finalConfig = configure(config, getDefaults(config)); },
+      configure => { finalConfig = configure(config, getApptimeUtils(config)); },
       handleFailure
     );
   } catch (err) {
