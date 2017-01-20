@@ -69,11 +69,21 @@ module.exports = {
     ],
   },
 
+  // Also resolve modules in web_modules. This is meant for user defined
+  // modules, and was the default with webpack 1. It appears that in webpack 2
+  // it was removed so I've reinstated it.
+  resolve: {
+    modules: [
+      'web_modules',
+      'node_modules',
+    ],
+  },
+
   module: {
     rules: [
       {
         test: /\.js$/,
-        include: resolveApp('./client'),
+        exclude: resolveApp('./node_modules'),
         loader: 'babel-loader',
         query: {
           babelrc: false,

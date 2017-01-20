@@ -77,6 +77,9 @@ module.exports = {
     // the static site plugin in order to be able to use the generated manifest
     // file within the template
     new ManifestPlugin({ publicPath }),
+
+    // NOTE: It's currently very important that this comes last, because in the
+    // build script we allow customizing this by popping this array.
     new ReactStaticPlugin({
       routes: staticRoutes,
       template: staticTemplate,
@@ -96,6 +99,16 @@ module.exports = {
     modules: [
       ownNodeModules,
       resolveApp('./node_modules'),
+    ],
+  },
+
+  // Also resolve modules in web_modules. This is meant for user defined
+  // modules, and was the default with webpack 1. It appears that in webpack 2
+  // it was removed so I've reinstated it.
+  resolve: {
+    modules: [
+      'web_modules',
+      'node_modules',
     ],
   },
 
