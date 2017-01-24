@@ -39,6 +39,14 @@ module.exports = {
       'core-js',
       resolveApp('./client/index.js'),
     ],
+    vendor: [
+      'core-js',
+      'classnames',
+      'history',
+      'react',
+      'react-dom',
+      'react-router'
+    ],
   },
 
   output: {
@@ -71,6 +79,9 @@ module.exports = {
       screw_ie8: true,
       sourceMap: true,
       compressor: { warnings: false },
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'vendor' // Specify the common bundle's name.
     }),
 
     // NOTE: NOTE **!AGAIN!**. It is imperative that this plugin comes before
