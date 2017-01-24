@@ -1,9 +1,14 @@
 const webpack = require('webpack');
+const path = require('path');
 const rupture = require('rupture');
 const autoprefixer = require('autoprefixer');
 const debug = require('debug')('app-time:app-scripts:config:dev'); // eslint-disable-line no-unused-vars
 
-const { resolveApp, ownNodeModules } = require('../utils/paths.js');
+const {
+  resolveApp,
+  ownNodeModules,
+  apptimeTempDir,
+} = require('../utils/paths.js');
 
 // Set up dev host. We do this so that it's possible to configure the URL our
 // script tag gets in dev mode. For instance if running the dev server in a
@@ -20,7 +25,7 @@ const DEV_HOST = process.env.DEV_HOST || `//${DEV_HOSTNAME}:${DEV_PORT}/`;
 // NOTE: Appending __webpack_hmr to the dev host is what allows HMR to work. For
 // more details see: https://github.com/glenjamin/webpack-hot-middleware/issues/37
 module.exports = {
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-eval-source-map',
 
   entry: {
     app: [
@@ -29,8 +34,10 @@ module.exports = {
     ],
   },
 
+  // TODO: How are we even using this output path? This config is only used for
+  // dev server
   output: {
-    path: resolveApp('./public'), // TODO: Why are we using public here?
+    path: resolveApp('./build'),
     filename: '[name].js',
     publicPath: DEV_HOST,
   },
@@ -50,6 +57,10 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
       },
+    }),
+    new webpack.DllReferencePlugin({
+      context: resolveApp('.'),
+      manifest: path.join(apptimeTempDir, 'vendor-manifest.json'),
     }),
   ],
 

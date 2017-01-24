@@ -8,6 +8,7 @@ const chalk = require('chalk');
 const debug = require('debug')('app-time:app-scripts:config:prod'); // eslint-disable-line no-unused-vars
 
 const { resolveApp, ownNodeModules } = require('../utils/paths.js');
+const getVendorLibs = require('../utils/getVendorLibs.js');
 
 debug('resolving loaders to:', ownNodeModules);
 debug('resolving everything else to:', resolveApp('./'));
@@ -29,6 +30,9 @@ if (process.env.NODE_ENV !== 'production') {
   throw new Error('Tried to build for production in non-production environment.');
 }
 
+// The app-time consumer's package.json
+const pkg = require(resolveApp('./package.json'));
+
 const publicPath = '/';
 
 module.exports = {
@@ -39,14 +43,7 @@ module.exports = {
       'core-js',
       resolveApp('./client/index.js'),
     ],
-    vendor: [
-      'core-js',
-      'classnames',
-      'history',
-      'react',
-      'react-dom',
-      'react-router'
-    ],
+    vendor: getVendorLibs(pkg),
   },
 
   output: {

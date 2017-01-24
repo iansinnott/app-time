@@ -19,7 +19,7 @@ const Dashboard = require('webpack-dashboard');
 const DashboardPlugin = require('webpack-dashboard/plugin');
 const { argv } = require('yargs');
 
-const { resolveApp } = require('../utils/paths.js');
+const { resolveApp, apptimeTempDir } = require('../utils/paths.js');
 const babelRequire = require('../utils/babelRequire.js');
 const clearConsole = require('../utils/clearConsole.js');
 const config = require('../config/webpack.config.dev.js');
@@ -163,6 +163,15 @@ app.use(require('webpack-dev-middleware')(compiler, {
 // NOTE: An empty logger is required for the wepback-dashboard plugin
 app.use(require('webpack-hot-middleware')(compiler, argv.dashboard ? { log(){} } : undefined));
 
+const dllName = 'vendor.dll.js';
+
+// This seems odd to do. There is likely a better way to send the dll when
+// requested
+app.get('/vendor.dll.js', (req, res) => {
+  const filepath = path.join(apptimeTempDir, dllName);
+  res.send(fs.readFileSync(filepath));
+});
+
 // Send the boilerplate HTML payload down for all get requests. Routing will be
 // handled entirely client side and we don't make an effort to pre-render pages
 // before they are served when in dev mode.
@@ -184,6 +193,11 @@ app.get('*', (req, res) => {
       paths.forEach(x => { agg[path.basename(x)] = x; });
       return agg;
     }, {});
+
+  // Add the dll as the vendor file. Standardizing this way allows the template
+  // to continue to include src={manifest['vendor.js']} in both prod and dev
+  // while pointing to different bundles.
+  mockManifest['vendor.js'] = `/${dllName}`;
 
   const html = renderDocumentToString({
     bundle: publicPath + 'app.js',
