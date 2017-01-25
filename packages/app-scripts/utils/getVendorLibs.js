@@ -2,7 +2,7 @@ const debug = require('debug')('app-time:app-scripts:utils:getVendorLibs'); // e
 
 const getVendorLibs = exports.getVendorLibs = (pkg) => {
   const hasVendorLibs = pkg.apptime && Array.isArray(pkg.apptime.vendorLibs);
-  const defaults = ['core-js', 'classnames', 'history', 'react', 'react-dom', 'react-router'];
+  const defaults = ['core-js', 'classnames/bind', 'history', 'react', 'react-dom', 'react-router'];
   const vendorLibs = hasVendorLibs ? pkg.apptime.vendorLibs : defaults;
 
   debug('vendorLibs', vendorLibs);
