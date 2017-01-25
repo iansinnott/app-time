@@ -66,7 +66,9 @@ module.exports = {
 
   // Disable performance warning hints in dev mode
   performance: {
-    hints: false
+    hints: false,
+    maxEntrypointSize: 20e6, // 20mb
+    maxAssetSize: 20e6, // 20mb
   },
 
   // NOTE: We try to resolve loaders first locally then within the app
