@@ -25,6 +25,8 @@ const DEV_HOST = process.env.DEV_HOST || `//${DEV_HOSTNAME}:${DEV_PORT}/`;
 // NOTE: Appending __webpack_hmr to the dev host is what allows HMR to work. For
 // more details see: https://github.com/glenjamin/webpack-hot-middleware/issues/37
 module.exports = {
+  cache: true,
+
   devtool: 'cheap-module-eval-source-map',
 
   entry: {
@@ -99,7 +101,10 @@ module.exports = {
         exclude: resolveApp('./node_modules'),
         loader: 'babel-loader',
         query: {
+          cacheDirectory: true, // Significant perf win for rebuilds
           babelrc: false,
+          // TOOD: Consider adding plugins: ['transform-runtime'] for less
+          // duplicaton in builds
           presets: [
             ['babel-preset-es2015', { modules: false }],
             'babel-preset-react',
