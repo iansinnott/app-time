@@ -48,17 +48,24 @@ const compileDll = () => {
     spinner.text = 'DLL compiled successfully';
     spinner.succeed();
 
-    // Log all stats. Coloring is automatic
-    console.log(stats.toString(statsOptions));
+    // Log nothing but the timing (in color)
+    console.log(' ', stats.toString({
+      timings: true,
+      colors: true,
+      assets: false,
+      version: false,
+      errors: false,
+      errorDetails: false,
+      children: false,
+      warnings: false,
+      hash: false,
+      chunks: false,
+      modules: false,
+      reasons: false,
+      source: false,
+      publicPath: false
+    }));
     console.log();
-
-    if(stats.hasWarnings()) {
-      console.log(chalk.yellow.bold('DLL compiled with warnings.'));
-      console.log();
-    } else {
-      console.log(chalk.green.bold('DLL compilation successful 🎉'));
-      console.log();
-    }
   });
 };
 

@@ -33,6 +33,13 @@ module.exports = {
     }),
   ],
 
+  // Disable any performance warning hints. Not relevant for DLL bundles
+  performance: {
+    hints: false,
+    maxEntrypointSize: 20e6, // 20mb
+    maxAssetSize: 20e6, // 20mb
+  },
+
   // Also resolve modules in web_modules. This is meant for user defined
   // modules, and was the default with webpack 1. It appears that in webpack 2
   // it was removed so I've reinstated it.
