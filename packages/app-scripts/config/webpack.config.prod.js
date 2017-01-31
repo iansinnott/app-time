@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const rupture = require('rupture');
+const instyll = require('instyll');
 const ReactStaticPlugin = require('react-static-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const autoprefixer = require('autoprefixer');
@@ -59,7 +60,7 @@ module.exports = {
       options: {
         postcss: [autoprefixer({ browsers: ['last 2 versions'] })],
         stylus: {
-          use: [rupture()],
+          use: [rupture(), instyll()],
         },
       },
     }),

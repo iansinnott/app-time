@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const rupture = require('rupture');
+const instyll = require('instyll');
 const autoprefixer = require('autoprefixer');
 const debug = require('debug')('app-time:app-scripts:config:dev'); // eslint-disable-line no-unused-vars
 
@@ -51,7 +52,7 @@ module.exports = {
       options: {
         postcss: [autoprefixer({ browsers: ['last 2 versions'] })],
         stylus: {
-          use: [rupture()],
+          use: [rupture(), instyll()],
         },
       },
     }),
