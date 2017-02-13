@@ -50,6 +50,16 @@ const getDefaults = (config) => {
   const hmrEntry = config.entry.app[0];
   return {
     hmrEntry,
+
+    define(defs) {
+      const defineIndex = config.plugins.findIndex(x => x instanceof webpack.DefinePlugin);
+      const existingDefinitions = config.plugins[defineIndex].definitions;
+      const newDefinitions = Object.assign({}, existingDefinitions, defs);
+      const plugins = config.plugins.slice();
+      plugins[defineIndex] = new webpack.DefinePlugin(newDefinitions);
+      debug('Define helper called. New plugins', plugins);
+      return Object.assign({}, config, { plugins });
+    },
   };
 };
 

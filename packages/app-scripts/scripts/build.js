@@ -42,14 +42,22 @@ const getApptimeUtils = (config) => {
     hmrEntry: null,
     polyfill,
 
+    define(defs) {
+      const index = config.plugins.findIndex(x => x instanceof webpack.DefinePlugin);
+      const existingDefinitions = config.plugins[index].definitions;
+      const newDefinitions = Object.assign({}, existingDefinitions, defs);
+      config.plugins[index] = new webpack.DefinePlugin(newDefinitions);
+      debug('Define helper called. New plugins', config.plugins);
+      return config;
+    },
+
     // This is important if the user wants use redux. In order to specify the
     // store the user needs to be able to configure the plugin
     ReactStaticPlugin(options) {
       debug('ReactStaticPlugin provided with options', options);
-      const plugins = config.plugins.slice(); // Do not mutate original
-      plugins.pop(); // Strip existing static plugin
-      plugins.push(new ReactStaticPlugin(options));
-      return Object.assign({}, config, { plugins });
+      const index = config.plugins.findIndex(x => x instanceof ReactStaticPlugin);
+      config.plugins[index] = new ReactStaticPlugin(options);
+      return config;
     },
   };
 };
@@ -79,6 +87,9 @@ if (fs.existsSync(customConfigPath)) {
 
 const build = () => {
   const spinner = ora('Compiling...').start();
+
+  debug('Final Webpack config:', finalConfig);
+
   const compiler = webpack(finalConfig);
 
   // Add the analyzer plugin if the user requests it with the --analyze flag
