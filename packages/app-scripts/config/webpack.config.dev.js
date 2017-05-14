@@ -28,7 +28,7 @@ const DEV_HOST = process.env.DEV_HOST || `//${DEV_HOSTNAME}:${DEV_PORT}/`;
 module.exports = {
   cache: true,
 
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'cheap-module-source-map',
 
   entry: {
     app: [
