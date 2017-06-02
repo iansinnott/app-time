@@ -182,6 +182,14 @@ app.get('/vendor.dll.js', (req, res) => {
   res.send(fs.readFileSync(filepath));
 });
 
+const serverConfigPath = resolveApp('apptime.config.server.js');
+if (fs.existsSync(serverConfigPath)) {
+  console.log(`Using custom configurator from: ${chalk.cyan.bold(serverConfigPath)}`);
+  console.log();
+
+  require(serverConfigPath)(app);
+}
+
 // Send the boilerplate HTML payload down for all get requests. Routing will be
 // handled entirely client side and we don't make an effort to pre-render pages
 // before they are served when in dev mode.
