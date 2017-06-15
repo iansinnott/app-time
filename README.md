@@ -17,6 +17,8 @@ Add these scripts to `package.json`:
   "scripts": {
     "start": "app-time start",
     "build": "app-time build"
+    "setup": "app-time setup",
+    "eject": "app-time eject",
   }
 }
 ```
@@ -80,6 +82,36 @@ app-time build --analyze
 ```
 
 This will generate an HTML report to `webpack-bundle-analyzer-report.html` as well as a stats file to `webpack-bundle-analyzer-stats.json`.
+
+### `setup`
+
+app-time uses the Webpack DLL plugin for super fast hot reloading. In order to do this Webpack needs to pre-compile the DLL file with your vendor dependencies. This is what `app-time setup` does. It's often convenient to place this script in the `postinstall` NPM hook so that Webpack will recompile your DLL file whenever you add new dependencies.
+
+You can configure what libraries are included in the DLL using the `apptime.vendorLibs` field in your `package.json`. Example:
+
+```json
+"apptime": {
+  "vendorLibs": [
+    "react",
+    "react-dom",
+    "react-router"
+  ]
+}
+```
+
+app-time has some sane defaults for the `vendorLib` array but as you add more dependencies it would be a good idea to update this list.
+
+### `eject`
+
+Bring all configuration files in to your own app and remove the app-time dependency. This action cannot be undone, but you will find it useful if you need to do some really custom configuration. In that case app-time functions like a Webpack boilerplate—getting everything set up initially and then letting you take it from there.
+
+Create React App is a similar project and does a good job of explaining "eject": https://github.com/facebookincubator/create-react-app#converting-to-a-custom-setup
+
+If you just want to see what `eject` would do without the commitment you can pass the `--dry-run` flag and no files will actually be moved or written:
+
+```
+app-time eject --dry-run
+```
 
 ## ⚠ Under Development ⚠
 
