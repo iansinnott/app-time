@@ -96,12 +96,14 @@ prompt(
   const ownPackage = require(resolveOwn('package.json'));
   const appPackage = require(resolveApp('package.json'));
 
+  console.log('Adding dependencies...');
+  delete appPackage.devDependencies['app-time'];
   Object.keys(ownPackage.dependencies).forEach((k) => {
-    console.log(`Adding dependency "${k}"`);
+    console.log(`Add dependency "${k}"`);
     appPackage.devDependencies[k] =  ownPackage.dependencies[k];
   });
 
-  console.log('Updating scripts');
+  console.log('Updating scripts...');
   delete appPackage.scripts.eject;
   Object.keys(appPackage.scripts).forEach(k => {
     appPackage.scripts[k] = appPackage.scripts[k]
