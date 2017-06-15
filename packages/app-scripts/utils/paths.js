@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 
 const appDir = fs.realpathSync(process.cwd());
-const resolveApp = (relpath) => path.resolve(appDir, relpath);
-const resolveOwn = (relpath) => path.resolve(__dirname, relpath);
+const resolveApp = (...relpaths) => path.resolve(appDir, ...relpaths);
+const resolveOwn = (...relpaths) => path.resolve(__dirname, ...relpaths);
 const ownNodeModules = resolveOwn('../../../node_modules');
 const apptimeTempDir = resolveApp('./.apptime');
 
