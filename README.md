@@ -16,9 +16,9 @@ Add these scripts to `package.json`:
 {
   "scripts": {
     "start": "app-time start",
-    "build": "app-time build"
+    "build": "app-time build",
     "setup": "app-time setup",
-    "eject": "app-time eject",
+    "eject": "app-time eject"
   }
 }
 ```
