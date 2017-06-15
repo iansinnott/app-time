@@ -8,6 +8,7 @@ switch (script) {
 case 'start':
 case 'build':
 case 'setup':
+case 'eject':
   const result = spawnSync(
     'node',
     [require.resolve(`../scripts/${script}`)].concat(args),
@@ -15,7 +16,6 @@ case 'setup':
   );
   process.exitCode = result.status;
   break;
-case 'eject': // TODO
 case 'test': // TODO
   console.log(`Script "${script}" is not yet ready. It is still under development.`);
   console.log('Check the repo for updates');
