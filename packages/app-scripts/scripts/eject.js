@@ -99,6 +99,14 @@ prompt(
   console.log('Adding dependencies...');
   delete appPackage.devDependencies['app-time'];
   Object.keys(ownPackage.dependencies).forEach((k) => {
+    // If a dependency already exists in _dependencies_ (i.e. not
+    // devDependencies) then skip over it. We don't want duplicates among the
+    // two because it causes npm/yarn warnings galore and it makes no sense.
+    if (appPackage.dependencies[k]) {
+      console.log(`Dependency alrady exists: "${k}" -- Skipped.`);
+      return;
+    }
+
     console.log(`Add dependency "${k}"`);
     appPackage.devDependencies[k] =  ownPackage.dependencies[k];
   });
