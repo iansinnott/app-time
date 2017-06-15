@@ -115,9 +115,8 @@ app-time eject --dry-run
 
 ## ⚠ Under Development ⚠
 
-This project is under active development and this is just the initial version. There are still many things missing which would likely make it more appealing to a wider audience. For example:
+This project is under active development and this is just the initial version. There are still many things missing which would likely make it more appealing to a wider audience.
 
-* Not yet configurable / extensible
-* Requires very specific file structure to work ([See react-static-boilerplate][rsb])
+* This project requires a very specific file structure to work ([See react-static-boilerplate][rsb])
 
 [rsb]: https://github.com/iansinnott/react-static-boilerplate
